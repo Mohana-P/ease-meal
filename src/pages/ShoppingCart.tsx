@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { 
@@ -9,7 +9,7 @@ import {
 } from "@/lib/data";
 import { 
   ShoppingCart as CartIcon, ChevronLeft, Trash2, 
-  Check, PackagePlus, ShoppingBasket, DollarSign
+  Check, PackagePlus, ShoppingBasket, IndianRupee
 } from "lucide-react";
 import {
   AlertDialog,
@@ -37,6 +37,7 @@ const groupItemsByCategory = (items: CartItem[]) => {
 };
 
 const ShoppingCart = () => {
+  const navigate = useNavigate();
   const [cart, setCart] = useState<CartItem[]>(shoppingCart);
 
   const handleRemoveItem = (ingredientId: string, recipeId: string) => {
@@ -50,14 +51,19 @@ const ShoppingCart = () => {
   };
 
   const handleCheckout = () => {
-    toast.success("Order placed! Your groceries will arrive soon.");
+    toast.success("Order placed! Redirecting to tracking...");
     clearCart();
     setCart([]);
+    
+    // Navigate to order tracking page after a brief delay
+    setTimeout(() => {
+      navigate('/order-tracking');
+    }, 1500);
   };
 
-  // Calculate total price of all items in the cart
+  // Calculate total price of all items in the cart (in rupees)
   const calculateTotalPrice = () => {
-    return cart.reduce((total, item) => total + item.ingredient.price, 0).toFixed(2);
+    return (cart.reduce((total, item) => total + item.ingredient.price, 0) * 83).toFixed(0);
   };
 
   const groupedItems = groupItemsByCategory(cart);
@@ -139,13 +145,13 @@ const ShoppingCart = () => {
               if (!items || items.length === 0) return null;
               
               // Calculate subtotal for this category
-              const categoryTotal = items.reduce((total, item) => total + item.ingredient.price, 0).toFixed(2);
+              const categoryTotal = (items.reduce((total, item) => total + item.ingredient.price, 0) * 83).toFixed(0);
               
               return (
                 <div key={category.id} className="mb-6">
                   <div className="flex justify-between items-center mb-3 pb-2 border-b">
                     <h2 className="text-lg font-medium">{category.name}</h2>
-                    <span className="text-sm font-medium text-recipe-600">${categoryTotal}</span>
+                    <span className="text-sm font-medium text-recipe-600">₹{categoryTotal}</span>
                   </div>
                   
                   <ul className="space-y-2">
@@ -169,7 +175,7 @@ const ShoppingCart = () => {
                         </div>
                         <div className="flex items-center">
                           <span className="font-medium text-recipe-600 mr-3">
-                            ${item.ingredient.price.toFixed(2)}
+                            ₹{Math.round(item.ingredient.price * 83)}
                           </span>
                           <Button
                             variant="ghost"
@@ -193,7 +199,7 @@ const ShoppingCart = () => {
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-medium">Total</span>
                   <div className="flex items-center">
-                    <DollarSign className="h-4 w-4 text-recipe-600" />
+                    <IndianRupee className="h-4 w-4 text-recipe-600" />
                     <span className="font-bold text-lg text-recipe-600">{calculateTotalPrice()}</span>
                   </div>
                 </div>

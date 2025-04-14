@@ -1,7 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { Recipe } from "@/lib/data";
-import { Clock, User, Heart, DollarSign } from "lucide-react";
+import { Clock, User, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toggleFavorite } from "@/lib/data";
 
@@ -14,16 +14,6 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
     e.preventDefault();
     e.stopPropagation();
     toggleFavorite(recipe.id);
-  };
-
-  // Calculate the total price of ingredients
-  const totalPrice = recipe.ingredients.reduce((sum, ingredient) => sum + ingredient.price, 0);
-  
-  // Function to determine price category
-  const getPriceCategory = (price: number) => {
-    if (price < 15) return "Budget";
-    if (price < 30) return "Moderate";
-    return "Premium";
   };
 
   return (
@@ -84,14 +74,6 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
               <User size={14} className="mr-1" />
               <span>{recipe.servings} servings</span>
             </div>
-          </div>
-          
-          {/* Price indicator */}
-          <div className="mt-2 flex items-center text-xs">
-            <DollarSign size={14} className="mr-1 text-recipe-600" />
-            <span className="font-medium text-recipe-600">
-              ${totalPrice.toFixed(2)} ({getPriceCategory(totalPrice)})
-            </span>
           </div>
         </div>
       </div>

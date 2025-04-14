@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { 
   ChevronLeft, Heart, Clock, User, ShoppingCart, 
-  Check, Plus, ListChecks, DollarSign
+  Check, Plus, ListChecks, IndianRupee, MinusCircle, PlusCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
+import VoicePlayback from "@/components/VoicePlayback";
 import { 
   recipes, Recipe, toggleFavorite, addToCart, addRecipeToCart, 
   shoppingCart
@@ -18,12 +19,16 @@ const RecipeDetail = () => {
   const navigate = useNavigate();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const [servings, setServings] = useState(0);
+  const [originalServings, setOriginalServings] = useState(0);
+  
   useEffect(() => {
     if (id) {
       const foundRecipe = recipes.find((r) => r.id === id);
       if (foundRecipe) {
         setRecipe(foundRecipe);
+        setServings(foundRecipe.servings);
+        setOriginalServings(foundRecipe.servings);
       } else {
         toast.error("Recipe not found");
         navigate("/");
@@ -50,7 +55,15 @@ const RecipeDetail = () => {
     if (recipe) {
       const ingredient = recipe.ingredients.find(ing => ing.id === ingredientId);
       if (ingredient) {
-        addToCart(ingredient, recipe.id, recipe.title);
+        // Calculate adjusted ingredient with scaled price and amount
+        const ratio = servings / originalServings;
+        const adjustedIngredient = {
+          ...ingredient,
+          price: ingredient.price * ratio,
+          amount: calculateAdjustedAmount(ingredient.amount, ratio)
+        };
+        
+        addToCart(adjustedIngredient, recipe.id, recipe.title);
         // Force re-render
         setRecipe({ ...recipe });
       }
@@ -59,16 +72,46 @@ const RecipeDetail = () => {
 
   const handleAddAllIngredients = () => {
     if (recipe) {
-      addRecipeToCart(recipe.id);
+      // Use the current serving size to adjust all ingredients
+      addRecipeToCart(recipe.id, servings / originalServings);
       // Force re-render
       setRecipe({ ...recipe });
     }
   };
+  
+  const calculateAdjustedAmount = (amount: string, ratio: number) => {
+    // Extract numeric part from amount string
+    const numericMatch = amount.match(/[\d.]+/);
+    if (!numericMatch) return amount;
+    
+    const numericValue = parseFloat(numericMatch[0]);
+    const adjustedValue = (numericValue * ratio).toFixed(1);
+    // Replace numeric part with adjusted value
+    return amount.replace(/[\d.]+/, adjustedValue);
+  };
 
-  // Calculate total price of ingredients
+  // Calculate total price of ingredients adjusted for serving size
   const calculateTotalPrice = () => {
     if (!recipe) return 0;
-    return recipe.ingredients.reduce((sum, ingredient) => sum + ingredient.price, 0);
+    const ratio = servings / originalServings;
+    return recipe.ingredients.reduce((sum, ingredient) => sum + (ingredient.price * ratio), 0);
+  };
+
+  const decreaseServings = () => {
+    if (servings > 1) {
+      setServings(servings - 1);
+    }
+  };
+
+  const increaseServings = () => {
+    setServings(servings + 1);
+  };
+
+  const handleCheckout = () => {
+    toast.success("Order placed! Redirecting to tracking page...");
+    setTimeout(() => {
+      navigate('/order-tracking');
+    }, 1500);
   };
 
   if (loading) {
@@ -154,6 +197,11 @@ const RecipeDetail = () => {
             </Button>
           </div>
           
+          {/* Voice Playback */}
+          <div className="mb-4">
+            <VoicePlayback instructions={recipe.instructions} />
+          </div>
+          
           {/* Recipe Meta */}
           <div className="grid grid-cols-4 gap-4 py-4 border-t border-b border-gray-100 my-4">
             <div className="text-center">
@@ -175,14 +223,33 @@ const RecipeDetail = () => {
                 <User className="h-5 w-5 text-recipe-600 mr-1" />
                 <span className="text-sm font-medium">Serves</span>
               </div>
-              <p className="text-gray-600">{recipe.servings}</p>
+              <div className="flex items-center justify-center space-x-2 mt-1">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 p-0" 
+                  onClick={decreaseServings}
+                  disabled={servings <= 1}
+                >
+                  <MinusCircle className="h-4 w-4" />
+                </Button>
+                <span className="text-gray-600">{servings}</span>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 p-0" 
+                  onClick={increaseServings}
+                >
+                  <PlusCircle className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
             <div className="text-center">
               <div className="flex justify-center">
-                <DollarSign className="h-5 w-5 text-recipe-600 mr-1" />
+                <IndianRupee className="h-5 w-5 text-recipe-600 mr-1" />
                 <span className="text-sm font-medium">Cost</span>
               </div>
-              <p className="text-gray-600">${calculateTotalPrice().toFixed(2)}</p>
+              <p className="text-gray-600">₹{Math.round(calculateTotalPrice() * 83)}</p>
             </div>
           </div>
           
@@ -203,6 +270,10 @@ const RecipeDetail = () => {
             <ul className="space-y-2">
               {recipe.ingredients.map((ingredient) => {
                 const inCart = isIngredientInCart(ingredient.id, recipe.id);
+                const ratio = servings / originalServings;
+                const adjustedPrice = ingredient.price * ratio;
+                const adjustedAmount = calculateAdjustedAmount(ingredient.amount, ratio);
+                
                 return (
                   <li 
                     key={ingredient.id}
@@ -210,8 +281,8 @@ const RecipeDetail = () => {
                   >
                     <span>
                       <span className="font-medium">{ingredient.name}</span>
-                      <span className="text-gray-600"> • {ingredient.amount}</span>
-                      <span className="text-recipe-600 ml-1">${ingredient.price.toFixed(2)}</span>
+                      <span className="text-gray-600"> • {adjustedAmount}</span>
+                      <span className="text-recipe-600 ml-1">₹{Math.round(adjustedPrice * 83)}</span>
                     </span>
                     <Button
                       onClick={() => handleAddIngredient(ingredient.id)}

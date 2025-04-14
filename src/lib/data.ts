@@ -283,8 +283,8 @@ export const addToCart = (ingredient: Ingredient, recipeId: string, recipeTitle:
   return false;
 };
 
-// Add all ingredients from a recipe to cart
-export const addRecipeToCart = (recipeId: string) => {
+// Add all ingredients from a recipe to cart with serving size adjustment
+export const addRecipeToCart = (recipeId: string, servingRatio = 1) => {
   const recipe = recipes.find(r => r.id === recipeId);
   
   if (!recipe) {
@@ -296,7 +296,14 @@ export const addRecipeToCart = (recipeId: string) => {
   let addedCount = 0;
   
   recipe.ingredients.forEach(ingredient => {
-    const added = addToCart(ingredient, recipe.id, recipe.title);
+    // Adjust ingredient based on serving size
+    const adjustedIngredient = {
+      ...ingredient,
+      price: ingredient.price * servingRatio,
+      amount: adjustAmount(ingredient.amount, servingRatio)
+    };
+    
+    const added = addToCart(adjustedIngredient, recipe.id, recipe.title);
     if (added) addedCount++;
     allAdded = allAdded && added;
   });
@@ -308,6 +315,18 @@ export const addRecipeToCart = (recipeId: string) => {
   }
   
   return allAdded;
+};
+
+// Helper function to adjust amount based on serving ratio
+const adjustAmount = (amount: string, ratio: number) => {
+  // Extract numeric part from amount string
+  const numericMatch = amount.match(/[\d.]+/);
+  if (!numericMatch) return amount;
+  
+  const numericValue = parseFloat(numericMatch[0]);
+  const adjustedValue = (numericValue * ratio).toFixed(1);
+  // Replace numeric part with adjusted value
+  return amount.replace(/[\d.]+/, adjustedValue);
 };
 
 // Remove item from cart
