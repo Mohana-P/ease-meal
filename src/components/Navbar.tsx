@@ -14,7 +14,7 @@ const Navbar = () => {
             <span className="text-recipe-600">
               <ShoppingCart size={24} />
             </span>
-            <span className="text-xl font-semibold">RecipeCart</span>
+            <span className="text-xl font-semibold">Ease Meal</span>
           </Link>
           
           {/* Search Bar (on larger screens) */}

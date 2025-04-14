@@ -16,9 +16,9 @@ const Index = () => {
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-recipe-500 to-recipe-600 text-white">
         <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-2">Recipe to Cart</h1>
+          <h1 className="text-3xl font-bold mb-2">Ease Meal</h1>
           <p className="text-recipe-50 mb-6">
-            Find delicious recipes and instantly add ingredients to your shopping list
+            Discover authentic Indian recipes and easily shop for ingredients
           </p>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { 
   ChevronLeft, Heart, Clock, User, ShoppingCart, 
-  Check, Plus, ListChecks
+  Check, Plus, ListChecks, DollarSign
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
@@ -63,6 +63,12 @@ const RecipeDetail = () => {
       // Force re-render
       setRecipe({ ...recipe });
     }
+  };
+
+  // Calculate total price of ingredients
+  const calculateTotalPrice = () => {
+    if (!recipe) return 0;
+    return recipe.ingredients.reduce((sum, ingredient) => sum + ingredient.price, 0);
   };
 
   if (loading) {
@@ -149,7 +155,7 @@ const RecipeDetail = () => {
           </div>
           
           {/* Recipe Meta */}
-          <div className="grid grid-cols-3 gap-4 py-4 border-t border-b border-gray-100 my-4">
+          <div className="grid grid-cols-4 gap-4 py-4 border-t border-b border-gray-100 my-4">
             <div className="text-center">
               <div className="flex justify-center">
                 <Clock className="h-5 w-5 text-recipe-600 mr-1" />
@@ -170,6 +176,13 @@ const RecipeDetail = () => {
                 <span className="text-sm font-medium">Serves</span>
               </div>
               <p className="text-gray-600">{recipe.servings}</p>
+            </div>
+            <div className="text-center">
+              <div className="flex justify-center">
+                <DollarSign className="h-5 w-5 text-recipe-600 mr-1" />
+                <span className="text-sm font-medium">Cost</span>
+              </div>
+              <p className="text-gray-600">${calculateTotalPrice().toFixed(2)}</p>
             </div>
           </div>
           
@@ -198,6 +211,7 @@ const RecipeDetail = () => {
                     <span>
                       <span className="font-medium">{ingredient.name}</span>
                       <span className="text-gray-600"> • {ingredient.amount}</span>
+                      <span className="text-recipe-600 ml-1">${ingredient.price.toFixed(2)}</span>
                     </span>
                     <Button
                       onClick={() => handleAddIngredient(ingredient.id)}

@@ -9,7 +9,7 @@ import {
 } from "@/lib/data";
 import { 
   ShoppingCart as CartIcon, ChevronLeft, Trash2, 
-  Check, PackagePlus, ShoppingBasket
+  Check, PackagePlus, ShoppingBasket, DollarSign
 } from "lucide-react";
 import {
   AlertDialog,
@@ -53,6 +53,11 @@ const ShoppingCart = () => {
     toast.success("Order placed! Your groceries will arrive soon.");
     clearCart();
     setCart([]);
+  };
+
+  // Calculate total price of all items in the cart
+  const calculateTotalPrice = () => {
+    return cart.reduce((total, item) => total + item.ingredient.price, 0).toFixed(2);
   };
 
   const groupedItems = groupItemsByCategory(cart);
@@ -133,11 +138,16 @@ const ShoppingCart = () => {
               const items = groupedItems[category.id];
               if (!items || items.length === 0) return null;
               
+              // Calculate subtotal for this category
+              const categoryTotal = items.reduce((total, item) => total + item.ingredient.price, 0).toFixed(2);
+              
               return (
                 <div key={category.id} className="mb-6">
-                  <h2 className="text-lg font-medium mb-3 pb-2 border-b">
-                    {category.name}
-                  </h2>
+                  <div className="flex justify-between items-center mb-3 pb-2 border-b">
+                    <h2 className="text-lg font-medium">{category.name}</h2>
+                    <span className="text-sm font-medium text-recipe-600">${categoryTotal}</span>
+                  </div>
+                  
                   <ul className="space-y-2">
                     {items.map((item) => (
                       <li
@@ -157,14 +167,19 @@ const ShoppingCart = () => {
                             </Link>
                           </div>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveItem(item.ingredient.id, item.recipeId)}
-                          className="text-gray-400 hover:text-red-500"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center">
+                          <span className="font-medium text-recipe-600 mr-3">
+                            ${item.ingredient.price.toFixed(2)}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveItem(item.ingredient.id, item.recipeId)}
+                            className="text-gray-400 hover:text-red-500"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </li>
                     ))}
                   </ul>
@@ -175,6 +190,13 @@ const ShoppingCart = () => {
             {/* Checkout Button */}
             <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-md p-4 z-10">
               <div className="container mx-auto px-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-medium">Total</span>
+                  <div className="flex items-center">
+                    <DollarSign className="h-4 w-4 text-recipe-600" />
+                    <span className="font-bold text-lg text-recipe-600">{calculateTotalPrice()}</span>
+                  </div>
+                </div>
                 <Button 
                   onClick={handleCheckout}
                   className="w-full bg-recipe-600 hover:bg-recipe-700"
