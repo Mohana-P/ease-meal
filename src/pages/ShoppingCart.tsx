@@ -1,217 +1,185 @@
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { X, ShoppingCart as CartIcon, ArrowRight, IndianRupee } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { 
-  shoppingCart, removeFromCart, clearCart, CartItem,
-  getGroceryCategories
-} from "@/lib/data";
-import { 
-  ShoppingCart as CartIcon, ChevronLeft, Trash2, 
-  Check, PackagePlus, ShoppingBasket, IndianRupee
-} from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { toast } from "@/components/ui/sonner";
-
-// Group cart items by category
-const groupItemsByCategory = (items: CartItem[]) => {
-  return items.reduce((acc, item) => {
-    const category = item.ingredient.category;
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(item);
-    return acc;
-  }, {} as Record<string, CartItem[]>);
-};
+import { shoppingCart, placeOrder } from "@/lib/data";
 
 const ShoppingCart = () => {
   const navigate = useNavigate();
-  const [cart, setCart] = useState<CartItem[]>(shoppingCart);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
-  const handleRemoveItem = (ingredientId: string, recipeId: string) => {
-    removeFromCart(ingredientId, recipeId);
-    setCart([...shoppingCart]); // Update local state
-  };
+  // Group items by recipe
+  const recipeGroups = shoppingCart.reduce((groups, item) => {
+    if (!groups[item.recipeId]) {
+      groups[item.recipeId] = {
+        recipeName: item.recipeName,
+        items: [],
+      };
+    }
+    groups[item.recipeId].items.push(item);
+    return groups;
+  }, {} as Record<string, { recipeName: string; items: typeof shoppingCart }>);
 
-  const handleClearCart = () => {
-    clearCart();
-    setCart([]);
+  // Calculate total price
+  const totalPrice = shoppingCart.reduce(
+    (sum, item) => sum + item.ingredient.price,
+    0
+  );
+
+  const handleRemoveItem = (index: number) => {
+    shoppingCart.splice(index, 1);
+    // Force re-render by updating state
+    navigate("/cart");
   };
 
   const handleCheckout = () => {
-    toast.success("Order placed! Redirecting to tracking...");
-    clearCart();
-    setCart([]);
+    setIsCheckingOut(true);
     
-    // Navigate to order tracking page after a brief delay
     setTimeout(() => {
-      navigate('/order-tracking');
+      const order = placeOrder();
+      
+      if (order) {
+        toast.success("Order placed successfully!");
+        setIsCheckingOut(false);
+        navigate("/order-tracking");
+      } else {
+        toast.error("Failed to place order. Cart is empty.");
+        setIsCheckingOut(false);
+      }
     }, 1500);
   };
 
-  // Calculate total price of all items in the cart (in rupees)
-  const calculateTotalPrice = () => {
-    return (cart.reduce((total, item) => total + item.ingredient.price, 0) * 83).toFixed(0);
-  };
-
-  const groupedItems = groupItemsByCategory(cart);
-  const groceryCategories = getGroceryCategories();
-  const isEmpty = cart.length === 0;
-
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
-      {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <Link to="/" className="text-gray-600 hover:text-gray-900">
-                <ChevronLeft className="h-5 w-5" />
-              </Link>
-              <h1 className="text-xl font-semibold flex items-center">
-                <CartIcon className="h-5 w-5 mr-2 text-recipe-600" />
-                Shopping List
-              </h1>
-            </div>
-            
-            {!isEmpty && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-gray-500 hover:text-red-500"
-                  >
-                    <Trash2 className="h-4 w-4 mr-1" />
-                    Clear All
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Clear shopping list?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will remove all items from your shopping list. This action cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleClearCart}>
-                      Clear
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-          </div>
-        </div>
-      </div>
-      
-      {/* Cart Content */}
+
       <div className="container mx-auto px-4 py-6">
-        {isEmpty ? (
-          <div className="flex flex-col items-center justify-center py-10 text-center">
-            <div className="bg-gray-100 rounded-full p-6 mb-4">
-              <ShoppingBasket className="h-12 w-12 text-gray-400" />
-            </div>
-            <h2 className="text-lg font-medium mb-2">Your shopping list is empty</h2>
-            <p className="text-gray-500 mb-6 max-w-md">
-              Add ingredients from recipes to create your shopping list
-            </p>
-            <Link to="/">
-              <Button>
-                <PackagePlus className="mr-2 h-4 w-4" />
-                Browse Recipes
-              </Button>
-            </Link>
-          </div>
-        ) : (
-          <div>
-            {groceryCategories.map((category) => {
-              const items = groupedItems[category.id];
-              if (!items || items.length === 0) return null;
-              
-              // Calculate subtotal for this category
-              const categoryTotal = (items.reduce((total, item) => total + item.ingredient.price, 0) * 83).toFixed(0);
-              
-              return (
-                <div key={category.id} className="mb-6">
-                  <div className="flex justify-between items-center mb-3 pb-2 border-b">
-                    <h2 className="text-lg font-medium">{category.name}</h2>
-                    <span className="text-sm font-medium text-recipe-600">₹{categoryTotal}</span>
-                  </div>
-                  
-                  <ul className="space-y-2">
-                    {items.map((item) => (
-                      <li
-                        key={`${item.ingredient.id}-${item.recipeId}`}
-                        className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm"
+        <h1 className="text-2xl font-bold mb-6">Shopping Cart</h1>
+
+        {shoppingCart.length > 0 ? (
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Cart items */}
+            <div className="w-full lg:w-2/3">
+              <div className="bg-white rounded-lg shadow-md p-6">
+                {Object.entries(recipeGroups).map(([recipeId, group]) => (
+                  <div key={recipeId} className="mb-6 last:mb-0">
+                    <div className="flex items-center justify-between mb-4">
+                      <Link
+                        to={`/recipe/${recipeId}`}
+                        className="text-lg font-medium text-recipe-600 hover:underline"
                       >
-                        <div>
-                          <div className="font-medium">{item.ingredient.name}</div>
-                          <div className="text-sm text-gray-500">
-                            <span>{item.ingredient.amount}</span>
-                            <span className="mx-2">•</span>
-                            <Link 
-                              to={`/recipe/${item.recipeId}`}
-                              className="text-recipe-600 hover:underline"
-                            >
-                              {item.recipeTitle}
-                            </Link>
-                          </div>
-                        </div>
-                        <div className="flex items-center">
-                          <span className="font-medium text-recipe-600 mr-3">
-                            ₹{Math.round(item.ingredient.price * 83)}
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveItem(item.ingredient.id, item.recipeId)}
-                            className="text-gray-400 hover:text-red-500"
+                        {group.recipeName}
+                      </Link>
+                      <span className="text-sm text-gray-500">
+                        {group.items.length} ingredients
+                      </span>
+                    </div>
+
+                    <div className="space-y-2">
+                      {group.items.map((item, index) => {
+                        const cartIndex = shoppingCart.findIndex(
+                          (i) =>
+                            i.ingredient.id === item.ingredient.id &&
+                            i.recipeId === item.recipeId
+                        );
+                        return (
+                          <div
+                            key={item.ingredient.id}
+                            className="flex items-center justify-between py-2 border-b last:border-0"
                           >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-            
-            {/* Checkout Button */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-md p-4 z-10">
-              <div className="container mx-auto px-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-medium">Total</span>
-                  <div className="flex items-center">
-                    <IndianRupee className="h-4 w-4 text-recipe-600" />
-                    <span className="font-bold text-lg text-recipe-600">{calculateTotalPrice()}</span>
+                            <div>
+                              <p className="font-medium">{item.ingredient.name}</p>
+                              <p className="text-sm text-gray-600">
+                                {item.ingredient.amount}
+                              </p>
+                            </div>
+                            <div className="flex items-center">
+                              <p className="mr-4 text-recipe-600 flex items-center">
+                                <IndianRupee className="h-4 w-4 mr-1" />
+                                {Math.round(item.ingredient.price * 83)}
+                              </p>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleRemoveItem(cartIndex)}
+                                className="text-gray-400 hover:text-gray-700"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-                <Button 
-                  onClick={handleCheckout}
-                  className="w-full bg-recipe-600 hover:bg-recipe-700"
-                >
-                  <Check className="mr-2 h-4 w-4" />
-                  Complete Order ({cart.length} items)
-                </Button>
+                ))}
               </div>
             </div>
+
+            {/* Order summary */}
+            <div className="w-full lg:w-1/3">
+              <div className="bg-white rounded-lg shadow-md p-6 sticky top-20">
+                <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
+                
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Subtotal</span>
+                    <span className="flex items-center">
+                      <IndianRupee className="h-4 w-4 mr-1" />
+                      {Math.round(totalPrice * 83)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Delivery Fee</span>
+                    <span className="flex items-center">
+                      <IndianRupee className="h-4 w-4 mr-1" />
+                      {totalPrice >= 10 ? "0" : Math.round(2 * 83)}
+                    </span>
+                  </div>
+                  <div className="border-t pt-2 mt-2">
+                    <div className="flex justify-between font-semibold">
+                      <span>Total</span>
+                      <span className="text-recipe-600 flex items-center">
+                        <IndianRupee className="h-4 w-4 mr-1" />
+                        {Math.round(totalPrice * 83) + (totalPrice >= 10 ? 0 : Math.round(2 * 83))}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <Button
+                  className="w-full flex items-center justify-center"
+                  disabled={isCheckingOut}
+                  onClick={handleCheckout}
+                >
+                  {isCheckingOut ? (
+                    <>Processing...</>
+                  ) : (
+                    <>
+                      Checkout <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+
+                <p className="text-xs text-gray-500 text-center mt-4">
+                  By checking out, you agree to our terms and conditions.
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-md p-10 text-center">
+            <CartIcon className="mx-auto h-16 w-16 text-gray-400" />
+            <h2 className="mt-4 text-xl font-medium">Your cart is empty</h2>
+            <p className="mt-2 text-gray-500">
+              Add some ingredients to your cart from our delicious recipes.
+            </p>
+            <Button className="mt-6" asChild>
+              <Link to="/">Browse Recipes</Link>
+            </Button>
           </div>
         )}
       </div>

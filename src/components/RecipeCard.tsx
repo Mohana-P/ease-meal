@@ -1,9 +1,10 @@
 
 import { Link } from "react-router-dom";
 import { Recipe } from "@/lib/data";
-import { Clock, User, Heart } from "lucide-react";
+import { Clock, User, Heart, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toggleFavorite } from "@/lib/data";
+import { getFormattedLastCooked } from "@/lib/orderHistory";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -15,6 +16,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
     e.stopPropagation();
     toggleFavorite(recipe.id);
   };
+
+  const cookingHistoryText = getFormattedLastCooked(recipe.id);
 
   return (
     <Link to={`/recipe/${recipe.id}`}>
@@ -75,6 +78,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
               <span>{recipe.servings} servings</span>
             </div>
           </div>
+          
+          {/* Cooking History */}
+          {cookingHistoryText && (
+            <div className="mt-2 pt-2 border-t border-gray-100 flex items-center text-xs text-recipe-600">
+              <History size={14} className="mr-1" />
+              <span>{cookingHistoryText}</span>
+            </div>
+          )}
         </div>
       </div>
     </Link>

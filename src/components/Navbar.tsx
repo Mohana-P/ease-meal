@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { ShoppingCart, Book, Heart, Search } from "lucide-react";
+import { ShoppingCart, Book, Heart, Search, History } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { shoppingCart } from "@/lib/data";
 
@@ -38,6 +38,10 @@ const Navbar = () => {
             <Link to="/favorites" className="p-2 text-gray-600 hover:text-recipe-600 transition-colors">
               <Heart className="h-5 w-5 sm:h-6 sm:w-6" />
               <span className="sr-only">Favorites</span>
+            </Link>
+            <Link to="/order-history" className="p-2 text-gray-600 hover:text-recipe-600 transition-colors">
+              <History className="h-5 w-5 sm:h-6 sm:w-6" />
+              <span className="sr-only">Order History</span>
             </Link>
             <Link to="/cart" className="p-2 text-gray-600 hover:text-recipe-600 transition-colors relative">
               <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
