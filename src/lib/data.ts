@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from 'uuid';
 import { snackItems } from './snackItems';
 import { addOrder, OrderItem, cookingHistory, getFormattedLastCooked } from './orderHistory';
@@ -160,6 +161,19 @@ export const recipes: Recipe[] = [
   // Add the snack items to the recipes array
   ...snackItems
 ];
+
+// Get all unique categories from recipes
+export const getCategories = (): string[] => {
+  const categoriesSet = new Set<string>();
+  
+  recipes.forEach(recipe => {
+    recipe.category.forEach(category => {
+      categoriesSet.add(category.toLowerCase());
+    });
+  });
+  
+  return Array.from(categoriesSet);
+};
 
 // Shopping cart
 export let shoppingCart: CartItem[] = [];

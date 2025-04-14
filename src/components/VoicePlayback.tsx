@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Volume2, VolumeX, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,6 +13,13 @@ interface ConversationMessage {
   text: string;
 }
 
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
 const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
   const [isListening, setIsListening] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -24,31 +30,29 @@ const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
     { type: 'system', text: 'Hi! I can help you with the recipe instructions. Ask me anything about the cooking process.' }
   ]);
   
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  // Scroll to bottom of chat
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [conversation]);
   
-  // Set up speech recognition
   useEffect(() => {
     if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
+      const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognitionAPI();
       recognitionRef.current.continuous = true;
       recognitionRef.current.interimResults = false;
       recognitionRef.current.lang = 'en-US';
       
-      recognitionRef.current.onresult = (event) => {
+      recognitionRef.current.onresult = (event: any) => {
         const transcript = event.results[event.results.length - 1][0].transcript.trim();
         if (transcript) {
           handleUserInput(transcript);
         }
       };
       
-      recognitionRef.current.onerror = (event) => {
+      recognitionRef.current.onerror = (event: any) => {
         console.error('Speech recognition error', event.error);
         toast.error('Speech recognition error. Please try again.');
         setIsListening(false);
@@ -96,7 +100,6 @@ const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
   const getStepResponse = (query: string): string => {
     query = query.toLowerCase();
     
-    // Check for step navigation commands
     if (query.includes('next step') || query.includes('next instruction')) {
       if (currentStep < instructions.length - 1) {
         setCurrentStep(currentStep + 1);
@@ -127,9 +130,7 @@ const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
       return `Step ${instructions.length}: ${instructions[instructions.length - 1]}`;
     }
     
-    // General queries
     if (query.includes('how') || query.includes('what') || query.includes('when')) {
-      // Simple keyword matching from current instruction
       const currentInstruction = instructions[currentStep].toLowerCase();
       
       for (const word of query.split(' ')) {
@@ -145,13 +146,10 @@ const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
   };
   
   const handleUserInput = (text: string) => {
-    // Add user message to conversation
     setConversation(prev => [...prev, { type: 'user', text }]);
     
-    // Generate response
     const response = getStepResponse(text);
     
-    // Add system response to conversation after a short delay
     setTimeout(() => {
       setConversation(prev => [...prev, { type: 'system', text: response }]);
       speakResponse(response);
