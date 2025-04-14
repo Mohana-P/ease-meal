@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Volume2, VolumeX, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -27,7 +28,7 @@ const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
   const [showChat, setShowChat] = useState(false);
   const [userInput, setUserInput] = useState('');
   const [conversation, setConversation] = useState<ConversationMessage[]>([
-    { type: 'system', text: 'Hi! I can help you with the recipe instructions. Ask me anything about the cooking process.' }
+    { type: 'system', text: 'Hi! I\'m Rachel, your cooking assistant. I can help you with the recipe instructions. Ask me anything about the cooking process or ingredients!' }
   ]);
   
   const recognitionRef = useRef<any>(null);
@@ -93,45 +94,120 @@ const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
     
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.9;
+    
+    // Set a female voice
+    const voices = window.speechSynthesis.getVoices();
+    const femaleVoice = voices.find(voice => 
+      voice.name.includes('female') || 
+      voice.name.includes('Female') ||
+      voice.name.includes('Google US English Female') ||
+      voice.name.includes('Samantha') ||
+      voice.name.toLowerCase().includes('woman')
+    );
+    
+    if (femaleVoice) {
+      utterance.voice = femaleVoice;
+    }
+    
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
   };
   
+  // Load voices as soon as possible
+  useEffect(() => {
+    const loadVoices = () => {
+      window.speechSynthesis.getVoices();
+    };
+    
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      loadVoices();
+      
+      // Chrome requires this event to load voices
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+    
+    return () => {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.onvoiceschanged = null;
+      }
+    };
+  }, []);
+  
   const getStepResponse = (query: string): string => {
     query = query.toLowerCase();
+    
+    // Personalized responses
+    const greetings = ['hi', 'hello', 'hey'];
+    if (greetings.some(greeting => query.includes(greeting))) {
+      return "Hello! I'm Rachel, your cooking assistant. How can I help you with your cooking today?";
+    }
+    
+    if (query.includes('thank you') || query.includes('thanks')) {
+      return "You're welcome! I'm happy to help with your cooking. Anything else you'd like to know?";
+    }
+    
+    if (query.includes('who are you')) {
+      return "I'm Rachel, your cooking assistant. I can guide you through recipes, answer cooking questions, and help you make delicious meals!";
+    }
     
     if (query.includes('next step') || query.includes('next instruction')) {
       if (currentStep < instructions.length - 1) {
         setCurrentStep(currentStep + 1);
-        return `Step ${currentStep + 2}: ${instructions[currentStep + 1]}`;
+        return `Let me move to the next step. Step ${currentStep + 2}: ${instructions[currentStep + 1]}`;
       } else {
-        return "That was the last step! Your dish should be ready now.";
+        return "That was the last step! Your dish should be ready now. Enjoy your meal!";
       }
     } else if (query.includes('previous step') || query.includes('back')) {
       if (currentStep > 0) {
         setCurrentStep(currentStep - 1);
-        return `Step ${currentStep}: ${instructions[currentStep - 1]}`;
+        return `Going back to the previous step. Step ${currentStep}: ${instructions[currentStep - 1]}`;
       } else {
-        return "You're already at the first step.";
+        return "We're already at the first step. Would you like me to explain it again?";
       }
     } else if (query.includes('repeat') || query.includes('again')) {
-      return `Step ${currentStep + 1}: ${instructions[currentStep]}`;
+      return `Let me repeat that for you. Step ${currentStep + 1}: ${instructions[currentStep]}`;
     } else if (query.includes('current step') || query.includes('what step')) {
-      return `You're on step ${currentStep + 1}: ${instructions[currentStep]}`;
+      return `You're on step ${currentStep + 1} of ${instructions.length}: ${instructions[currentStep]}`;
     } else if (query.includes('how many steps')) {
-      return `This recipe has ${instructions.length} steps.`;
+      return `This recipe has ${instructions.length} steps in total. We're currently on step ${currentStep + 1}.`;
     } else if (query.includes('read all steps') || query.includes('all instructions')) {
-      return instructions.map((step, i) => `Step ${i + 1}: ${step}`).join('. ');
+      return `Here are all the steps: ${instructions.map((step, i) => `Step ${i + 1}: ${step}`).join('. ')}`;
     } else if (query.includes('first step')) {
       setCurrentStep(0);
-      return `Step 1: ${instructions[0]}`;
+      return `Going to the first step. Step 1: ${instructions[0]}`;
     } else if (query.includes('last step')) {
       setCurrentStep(instructions.length - 1);
-      return `Step ${instructions.length}: ${instructions[instructions.length - 1]}`;
+      return `Jumping to the last step. Step ${instructions.length}: ${instructions[instructions.length - 1]}`;
     }
     
+    // Check for questions about current step
     if (query.includes('how') || query.includes('what') || query.includes('when')) {
       const currentInstruction = instructions[currentStep].toLowerCase();
+      
+      // Check for ingredient questions
+      if (query.includes('ingredient') || query.includes('add') || query.includes('use')) {
+        for (const word of query.split(' ')) {
+          if (word.length > 3 && currentInstruction.includes(word)) {
+            return `In this step, we're using ${word}. ${instructions[currentStep]}`;
+          }
+        }
+      }
+      
+      // Check for time-related questions
+      if (query.includes('long') || query.includes('time') || query.includes('minutes')) {
+        const timeMatch = currentInstruction.match(/(\d+)\s*(minute|min|hour|hr|second|sec)/i);
+        if (timeMatch) {
+          return `You should allow ${timeMatch[0]} for this step. ${instructions[currentStep]}`;
+        }
+      }
+      
+      // Check for temperature questions
+      if (query.includes('temperature') || query.includes('hot') || query.includes('heat')) {
+        const tempMatch = currentInstruction.match(/(\d+)\s*(degree|°|celsius|fahrenheit|c\b|f\b)/i);
+        if (tempMatch) {
+          return `The temperature should be set to ${tempMatch[0]} for this step. ${instructions[currentStep]}`;
+        }
+      }
       
       for (const word of query.split(' ')) {
         if (word.length > 3 && currentInstruction.includes(word)) {
@@ -139,10 +215,11 @@ const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
         }
       }
       
-      return `I don't have specific information about that. The current step is: ${instructions[currentStep]}`;
+      return `I'm not entirely sure about that specific detail. The current step says: ${instructions[currentStep]}. Can you ask me in a different way?`;
     }
     
-    return `I'm not sure how to help with that. The current step is: ${instructions[currentStep]}`;
+    // Default response for unrecognized queries
+    return `I'm not sure how to help with that specific question. For the current step (${currentStep + 1}), you need to: ${instructions[currentStep]}. Is there anything specific about this step you'd like to know?`;
   };
   
   const handleUserInput = (text: string) => {
@@ -182,7 +259,7 @@ const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
         </Button>
         <div className="flex-1">
           <div className="text-sm font-medium">
-            {showChat ? 'Recipe Assistant' : 'Voice Recipe Assistant'}
+            {showChat ? 'Rachel - Recipe Assistant' : 'Voice Recipe Assistant'}
           </div>
           <div className="text-xs text-gray-500">
             Step {currentStep + 1} of {instructions.length}
@@ -238,7 +315,7 @@ const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
               <Input
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
-                placeholder="Ask about the recipe..."
+                placeholder="Ask Rachel about the recipe..."
                 className="flex-1"
               />
               <Button type="submit" variant="default">

@@ -3,14 +3,16 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { 
   ChevronLeft, Heart, Clock, User, ShoppingCart, 
-  Check, Plus, ListChecks, IndianRupee, MinusCircle, PlusCircle
+  Check, Plus, ListChecks, IndianRupee, MinusCircle, PlusCircle,
+  Restaurant
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import VoicePlayback from "@/components/VoicePlayback";
+import RestaurantOrderModal from "@/components/RestaurantOrderModal";
 import { 
   recipes, Recipe, toggleFavorite, addToCart, addRecipeToCart, 
-  shoppingCart
+  shoppingCart, getRestaurantsForRecipe
 } from "@/lib/data";
 import { toast } from "@/components/ui/sonner";
 
@@ -21,6 +23,7 @@ const RecipeDetail = () => {
   const [loading, setLoading] = useState(true);
   const [servings, setServings] = useState(0);
   const [originalServings, setOriginalServings] = useState(0);
+  const [showRestaurantModal, setShowRestaurantModal] = useState(false);
   
   useEffect(() => {
     if (id) {
@@ -114,6 +117,15 @@ const RecipeDetail = () => {
     }, 1500);
   };
 
+  const getRestaurants = () => {
+    if (!recipe || !id) return [];
+    return getRestaurantsForRecipe(id);
+  };
+
+  const openRestaurantModal = () => {
+    setShowRestaurantModal(true);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -135,6 +147,8 @@ const RecipeDetail = () => {
       </div>
     );
   }
+
+  const restaurants = getRestaurants();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -182,19 +196,32 @@ const RecipeDetail = () => {
               </h1>
               <p className="text-gray-600 mb-4">{recipe.description}</p>
             </div>
-            <Button 
-              onClick={handleToggleFavorite}
-              variant="outline" 
-              size="icon" 
-              className={`h-10 w-10 rounded-full ${
-                recipe.isFavorite ? "text-red-500 border-red-200" : ""
-              }`}
-            >
-              <Heart 
-                fill={recipe.isFavorite ? "currentColor" : "none"} 
-                className="h-5 w-5"
-              />
-            </Button>
+            <div className="flex gap-2">
+              {restaurants.length > 0 && (
+                <Button 
+                  onClick={openRestaurantModal}
+                  variant="outline" 
+                  size="sm"
+                  className="text-recipe-700 border-recipe-200 flex gap-1"
+                >
+                  <Restaurant className="h-4 w-4" />
+                  Order Ready
+                </Button>
+              )}
+              <Button 
+                onClick={handleToggleFavorite}
+                variant="outline" 
+                size="icon" 
+                className={`h-10 w-10 rounded-full ${
+                  recipe.isFavorite ? "text-red-500 border-red-200" : ""
+                }`}
+              >
+                <Heart 
+                  fill={recipe.isFavorite ? "currentColor" : "none"} 
+                  className="h-5 w-5"
+                />
+              </Button>
+            </div>
           </div>
           
           {/* Voice Playback */}
@@ -249,7 +276,7 @@ const RecipeDetail = () => {
                 <IndianRupee className="h-5 w-5 text-recipe-600 mr-1" />
                 <span className="text-sm font-medium">Cost</span>
               </div>
-              <p className="text-gray-600">₹{Math.round(calculateTotalPrice() * 83)}</p>
+              <p className="text-gray-600">₹{Math.round(calculateTotalPrice())}</p>
             </div>
           </div>
           
@@ -282,7 +309,7 @@ const RecipeDetail = () => {
                     <span>
                       <span className="font-medium">{ingredient.name}</span>
                       <span className="text-gray-600"> • {adjustedAmount}</span>
-                      <span className="text-recipe-600 ml-1">₹{Math.round(adjustedPrice * 83)}</span>
+                      <span className="text-recipe-600 ml-1">₹{Math.round(adjustedPrice)}</span>
                     </span>
                     <Button
                       onClick={() => handleAddIngredient(ingredient.id)}
@@ -315,6 +342,15 @@ const RecipeDetail = () => {
           </div>
         </div>
       </div>
+      
+      {/* Restaurant Order Modal */}
+      <RestaurantOrderModal
+        open={showRestaurantModal}
+        onClose={() => setShowRestaurantModal(false)}
+        recipeId={recipe.id}
+        recipeName={recipe.title}
+        restaurants={restaurants}
+      />
       
       {/* Floating Action Button for Mobile */}
       <div className="md:hidden fixed bottom-6 right-6 z-20">
