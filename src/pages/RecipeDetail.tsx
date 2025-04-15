@@ -4,7 +4,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { 
   ChevronLeft, Heart, Clock, User, ShoppingCart, 
   Check, Plus, ListChecks, IndianRupee, MinusCircle, PlusCircle,
-  Restaurant
+  Utensils
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
