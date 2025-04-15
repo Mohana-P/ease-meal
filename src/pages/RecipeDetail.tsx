@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { 
@@ -43,7 +42,6 @@ const RecipeDetail = () => {
   const handleToggleFavorite = () => {
     if (recipe) {
       toggleFavorite(recipe.id);
-      // Force re-render by updating state
       setRecipe({ ...recipe, isFavorite: !recipe.isFavorite });
     }
   };
@@ -58,7 +56,6 @@ const RecipeDetail = () => {
     if (recipe) {
       const ingredient = recipe.ingredients.find(ing => ing.id === ingredientId);
       if (ingredient) {
-        // Calculate adjusted ingredient with scaled price and amount
         const ratio = servings / originalServings;
         const adjustedIngredient = {
           ...ingredient,
@@ -67,7 +64,6 @@ const RecipeDetail = () => {
         };
         
         addToCart(adjustedIngredient, recipe.id, recipe.title);
-        // Force re-render
         setRecipe({ ...recipe });
       }
     }
@@ -75,25 +71,20 @@ const RecipeDetail = () => {
 
   const handleAddAllIngredients = () => {
     if (recipe) {
-      // Use the current serving size to adjust all ingredients
       addRecipeToCart(recipe.id, servings / originalServings);
-      // Force re-render
       setRecipe({ ...recipe });
     }
   };
   
   const calculateAdjustedAmount = (amount: string, ratio: number) => {
-    // Extract numeric part from amount string
     const numericMatch = amount.match(/[\d.]+/);
     if (!numericMatch) return amount;
     
     const numericValue = parseFloat(numericMatch[0]);
     const adjustedValue = (numericValue * ratio).toFixed(1);
-    // Replace numeric part with adjusted value
     return amount.replace(/[\d.]+/, adjustedValue);
   };
 
-  // Calculate total price of ingredients adjusted for serving size
   const calculateTotalPrice = () => {
     if (!recipe) return 0;
     const ratio = servings / originalServings;
@@ -204,7 +195,7 @@ const RecipeDetail = () => {
                   size="sm"
                   className="text-recipe-700 border-recipe-200 flex gap-1"
                 >
-                  <Restaurant className="h-4 w-4" />
+                  <Utensils className="h-4 w-4" />
                   Order Ready
                 </Button>
               )}
