@@ -192,7 +192,7 @@ export const recipes: Recipe[] = [
     prepTime: 20,
     cookTime: 15,
     servings: 4,
-    image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?q=80&w=2070&auto=format&fit=crop',
+    image: 'https://www.anjappar.ch/wp-content/uploads/2022/09/Masala-Dosa-1.jpg',
     isFavorite: true,
     ingredients: [
       { id: uuidv4(), name: 'Dosa batter', amount: '3 cups', price: 40 },
