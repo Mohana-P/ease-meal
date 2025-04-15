@@ -1,7 +1,6 @@
-import { Recipe } from './data';
 import { v4 as uuidv4 } from 'uuid';
+import { Recipe } from './data';
 
-// Snack items recipes
 export const snackItems: Recipe[] = [
   {
     id: '5',
@@ -37,7 +36,7 @@ export const snackItems: Recipe[] = [
     prepTime: 20,
     cookTime: 25,
     servings: 12,
-    image: 'https://www.anjappar.ch/wp-content/uploads/2022/09/Gulab-Jamun-1.jpg',
+    image: 'https://www.vegrecipesofindia.com/wp-content/uploads/2021/08/gulab-jamun-recipe-1.jpg',
     isFavorite: false,
     ingredients: [
       { id: uuidv4(), name: 'Milk powder', amount: '1 cup', price: 60 },
@@ -63,7 +62,7 @@ export const snackItems: Recipe[] = [
     prepTime: 15,
     cookTime: 15,
     servings: 4,
-    image: 'https://www.khinskitchen.com/wp-content/uploads/2021/02/Vegetable-Pakora-Featured-Image.jpg',
+    image: 'https://www.whiskaffair.com/wp-content/uploads/2020/03/Vegetable-Pakora-2-1.jpg',
     isFavorite: false,
     ingredients: [
       { id: uuidv4(), name: 'Chickpea flour', amount: '1 cup', price: 40 },
