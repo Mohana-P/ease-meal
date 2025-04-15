@@ -1,4 +1,3 @@
-
 import { Recipe } from './data';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -38,7 +37,7 @@ export const snackItems: Recipe[] = [
     prepTime: 20,
     cookTime: 25,
     servings: 12,
-    image: 'https://images.unsplash.com/photo-1627462932730-846d957b0c42?q=80&w=2070&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1589285671176-644521b77d89?q=80&w=3433&auto=format&fit=crop',
     isFavorite: false,
     ingredients: [
       { id: uuidv4(), name: 'Milk powder', amount: '1 cup', price: 60 },
@@ -64,7 +63,7 @@ export const snackItems: Recipe[] = [
     prepTime: 15,
     cookTime: 15,
     servings: 4,
-    image: 'https://images.unsplash.com/photo-1601050690294-397f6c845797?q=80&w=2071&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1626082896492-766af4eb6501?q=80&w=3328&auto=format&fit=crop',
     isFavorite: false,
     ingredients: [
       { id: uuidv4(), name: 'Chickpea flour', amount: '1 cup', price: 40 },
