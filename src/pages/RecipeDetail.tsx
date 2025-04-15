@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
-import VoicePlayback from "@/components/VoicePlayback";
 import RestaurantOrderModal from "@/components/RestaurantOrderModal";
 import { 
   recipes, Recipe, toggleFavorite, addToCart, addRecipeToCart, 
@@ -213,11 +212,6 @@ const RecipeDetail = () => {
                 />
               </Button>
             </div>
-          </div>
-          
-          {/* Voice Playback */}
-          <div className="mb-4">
-            <VoicePlayback instructions={recipe.instructions} />
           </div>
           
           {/* Recipe Meta */}

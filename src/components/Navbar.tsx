@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { ShoppingCart, Heart, History } from "lucide-react";
+import { ChefHat, Heart, History, ShoppingCart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { shoppingCart } from "@/lib/data";
 import SearchInput from "./SearchInput";
@@ -13,7 +13,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <span className="text-recipe-600">
-              <ShoppingCart size={24} />
+              <ChefHat size={24} />
             </span>
             <span className="text-xl font-semibold">Ease Meal</span>
           </Link>
@@ -28,10 +28,6 @@ const Navbar = () => {
             <Link to="/favorites" className="p-2 text-gray-600 hover:text-recipe-600 transition-colors">
               <Heart className="h-5 w-5 sm:h-6 sm:w-6" />
               <span className="sr-only">Favorites</span>
-            </Link>
-            <Link to="/order-history" className="p-2 text-gray-600 hover:text-recipe-600 transition-colors">
-              <History className="h-5 w-5 sm:h-6 sm:w-6" />
-              <span className="sr-only">Order History</span>
             </Link>
             <Link to="/cart" className="p-2 text-gray-600 hover:text-recipe-600 transition-colors relative">
               <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
