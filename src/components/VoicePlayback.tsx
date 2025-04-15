@@ -78,6 +78,7 @@ const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
         if (recognitionRef.current) {
           recognitionRef.current.start();
           setIsListening(true);
+          toast.success("I'm listening! Ask me about the recipe.");
         }
       } else {
         toast.error('Speech recognition is not supported in your browser');
@@ -87,6 +88,11 @@ const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
   
   const toggleMute = () => {
     setIsMuted(!isMuted);
+    if (!isMuted) {
+      toast.info("Voice responses muted");
+    } else {
+      toast.info("Voice responses enabled");
+    }
   };
   
   const speakResponse = (text: string) => {
@@ -136,9 +142,78 @@ const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
   const getStepResponse = (query: string): string => {
     query = query.toLowerCase();
     
+    // Check for common cooking assistant triggers
+    if (query.includes('hi chef') || query.includes('hey chef')) {
+      if (currentStep < instructions.length) {
+        return `Hello! For this step, you need to: ${instructions[currentStep]}`;
+      } else {
+        return "Hello! You've completed all the steps. The dish should be ready now!";
+      }
+    }
+    
+    // Handle questions about what to do next after specific actions
+    if (query.includes('what should i do next') || query.includes('what next')) {
+      // Check for specific cooking actions the user might have just done
+      if (query.includes('marinated') || query.includes('marinate')) {
+        for (let i = 0; i < instructions.length; i++) {
+          const step = instructions[i].toLowerCase();
+          if (step.includes('marinate')) {
+            if (i + 1 < instructions.length) {
+              setCurrentStep(i + 1);
+              return `Now that you've marinated, the next step is to: ${instructions[i + 1]}`;
+            }
+          }
+        }
+      }
+      
+      if (query.includes('chopped') || query.includes('cut') || query.includes('sliced')) {
+        for (let i = 0; i < instructions.length; i++) {
+          const step = instructions[i].toLowerCase();
+          if (step.includes('chop') || step.includes('cut') || step.includes('slice')) {
+            if (i + 1 < instructions.length) {
+              setCurrentStep(i + 1);
+              return `Now that you've prepared the ingredients, the next step is to: ${instructions[i + 1]}`;
+            }
+          }
+        }
+      }
+      
+      if (query.includes('mixed') || query.includes('combine') || query.includes('combined')) {
+        for (let i = 0; i < instructions.length; i++) {
+          const step = instructions[i].toLowerCase();
+          if (step.includes('mix') || step.includes('combine')) {
+            if (i + 1 < instructions.length) {
+              setCurrentStep(i + 1);
+              return `Now that you've mixed everything, the next step is to: ${instructions[i + 1]}`;
+            }
+          }
+        }
+      }
+      
+      if (query.includes('heated') || query.includes('pan is hot')) {
+        for (let i = 0; i < instructions.length; i++) {
+          const step = instructions[i].toLowerCase();
+          if (step.includes('heat')) {
+            if (i + 1 < instructions.length) {
+              setCurrentStep(i + 1);
+              return `Now that the pan is hot, the next step is to: ${instructions[i + 1]}`;
+            }
+          }
+        }
+      }
+      
+      // Generic next step if no specific action is recognized
+      if (currentStep < instructions.length - 1) {
+        setCurrentStep(currentStep + 1);
+        return `Let's move to the next step. ${instructions[currentStep]}`;
+      } else {
+        return "That's all the steps! Your dish should be ready now. Enjoy!";
+      }
+    }
+    
     // Personalized responses
     const greetings = ['hi', 'hello', 'hey'];
-    if (greetings.some(greeting => query.includes(greeting))) {
+    if (greetings.some(greeting => query.includes(greeting)) && !query.includes('chef')) {
       return "Hello! I'm Rachel, your cooking assistant. How can I help you with your cooking today?";
     }
     
@@ -248,8 +323,8 @@ const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => setShowChat(!showChat)}
-          className={`${showChat ? 'bg-recipe-100 text-recipe-700' : 'bg-white'}`}
+          onClick={toggleListening}
+          className={`${isListening ? 'bg-recipe-100 text-recipe-700' : 'bg-white'}`}
         >
           {isListening ? (
             <Mic className="h-5 w-5 text-red-500" />
@@ -276,6 +351,14 @@ const VoicePlayback: React.FC<VoicePlaybackProps> = ({ instructions }) => {
           ) : (
             <Volume2 className="h-5 w-5" />
           )}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowChat(!showChat)}
+          className="text-recipe-600"
+        >
+          {showChat ? "Hide Chat" : "Show Chat"}
         </Button>
       </div>
       

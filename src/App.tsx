@@ -9,6 +9,7 @@ import RecipeDetail from "./pages/RecipeDetail";
 import ShoppingCart from "./pages/ShoppingCart";
 import OrderTracking from "./pages/OrderTracking";
 import OrderHistory from "./pages/OrderHistory";
+import Favorites from "./pages/Favorites";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/cart" element={<ShoppingCart />} />
           <Route path="/order-tracking" element={<OrderTracking />} />
           <Route path="/order-history" element={<OrderHistory />} />
+          <Route path="/favorites" element={<Favorites />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
