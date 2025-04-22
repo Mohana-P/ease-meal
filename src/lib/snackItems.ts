@@ -1,83 +1,257 @@
+
 import { v4 as uuidv4 } from 'uuid';
 import { Recipe } from './data';
 
 export const snackItems: Recipe[] = [
   {
     id: '5',
-    title: 'Samosa',
-    description: 'Crispy pastry filled with spiced potatoes and peas',
+    title: 'Pani Puri',
+    description: 'Crispy hollow puris filled with spicy mint water and potato mixture',
     category: ['Snack', 'Vegetarian', 'Street Food'],
-    prepTime: 30,
-    cookTime: 20,
-    servings: 6,
+    prepTime: 15,
+    cookTime: 10,
+    servings: 4,
     image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?q=80&w=2071&auto=format&fit=crop',
     isFavorite: false,
     ingredients: [
-      { id: uuidv4(), name: 'All-purpose flour', amount: '2 cups', price: 30 },
-      { id: uuidv4(), name: 'Potatoes', amount: '4 medium', price: 40 },
-      { id: uuidv4(), name: 'Green peas', amount: '1/2 cup', price: 20 },
-      { id: uuidv4(), name: 'Cumin seeds', amount: '1 tsp', price: 5 },
-      { id: uuidv4(), name: 'Garam masala', amount: '1 tsp', price: 5 },
-      { id: uuidv4(), name: 'Oil for frying', amount: '2 cups', price: 60 }
+      { id: uuidv4(), name: 'Puri shells', amount: '24 pieces', price: 40 },
+      { id: uuidv4(), name: 'Potatoes', amount: '2 medium', price: 20 },
+      { id: uuidv4(), name: 'Mint leaves', amount: '1 cup', price: 15 },
+      { id: uuidv4(), name: 'Tamarind', amount: '2 tbsp', price: 10 },
+      { id: uuidv4(), name: 'Chaat masala', amount: '2 tsp', price: 5 }
     ],
     instructions: [
-      'Make the dough by mixing flour, salt, and oil. Add water gradually to form a stiff dough.',
-      'Boil, peel, and mash the potatoes. Mix with peas, spices, and salt.',
-      'Roll the dough into circles and cut in half. Form cones, fill with potato mixture.',
-      'Seal the edges with water and deep fry until golden brown.',
-      'Serve hot with mint chutney and tamarind sauce.'
+      'Boil and mash potatoes, mix with spices for filling',
+      'Prepare mint water by blending mint leaves with spices',
+      'Make tamarind chutney by soaking and straining tamarind',
+      'Crack puris on top, fill with potato mixture',
+      'Add spicy mint water and serve immediately'
     ]
   },
   {
     id: '6',
-    title: 'Gulab Jamun',
-    description: 'Soft milk solids balls soaked in rose-flavored sugar syrup',
-    category: ['Dessert', 'Sweet', 'Vegetarian'],
+    title: 'Vada Pav',
+    description: 'Spicy potato fritters in a bun with chutneys',
+    category: ['Snack', 'Vegetarian', 'Street Food'],
     prepTime: 20,
-    cookTime: 25,
-    servings: 12,
-    image: 'https://www.vegrecipesofindia.com/wp-content/uploads/2021/08/gulab-jamun-recipe-1.jpg',
+    cookTime: 15,
+    servings: 4,
+    image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?q=80&w=2071&auto=format&fit=crop',
     isFavorite: false,
     ingredients: [
-      { id: uuidv4(), name: 'Milk powder', amount: '1 cup', price: 60 },
-      { id: uuidv4(), name: 'All-purpose flour', amount: '1/4 cup', price: 10 },
-      { id: uuidv4(), name: 'Ghee', amount: '2 tbsp', price: 30 },
-      { id: uuidv4(), name: 'Sugar', amount: '1.5 cups', price: 30 },
-      { id: uuidv4(), name: 'Cardamom powder', amount: '1/4 tsp', price: 5 },
-      { id: uuidv4(), name: 'Rose water', amount: '1 tsp', price: 10 }
+      { id: uuidv4(), name: 'Pav buns', amount: '8 pieces', price: 30 },
+      { id: uuidv4(), name: 'Potatoes', amount: '4 medium', price: 40 },
+      { id: uuidv4(), name: 'Green chilies', amount: '4', price: 5 },
+      { id: uuidv4(), name: 'Gram flour', amount: '1 cup', price: 30 },
+      { id: uuidv4(), name: 'Garlic chutney', amount: '4 tbsp', price: 20 }
     ],
     instructions: [
-      'Mix milk powder, flour, and baking soda. Add ghee and knead into a soft dough using milk.',
-      'Shape the dough into small balls, ensuring there are no cracks.',
-      'Heat oil in a pan and fry the balls on low heat until golden brown.',
-      'Prepare sugar syrup by boiling sugar and water with cardamom and rose water.',
-      'Soak the fried balls in warm sugar syrup for at least 30 minutes before serving.'
+      'Boil and mash potatoes, mix with spices',
+      'Make small balls and coat with gram flour batter',
+      'Deep fry until golden brown',
+      'Slice pav buns and spread chutneys',
+      'Place vada in between and serve hot'
     ]
   },
   {
     id: '7',
-    title: 'Pakora',
-    description: 'Crispy vegetable fritters in chickpea batter',
-    category: ['Snack', 'Vegetarian', 'Monsoon Food'],
+    title: 'Bhel Puri',
+    description: 'Crunchy puffed rice mixed with vegetables and tangy chutneys',
+    category: ['Snack', 'Vegetarian', 'Street Food'],
+    prepTime: 10,
+    cookTime: 0,
+    servings: 4,
+    image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?q=80&w=2071&auto=format&fit=crop',
+    isFavorite: false,
+    ingredients: [
+      { id: uuidv4(), name: 'Puffed rice', amount: '4 cups', price: 20 },
+      { id: uuidv4(), name: 'Sev', amount: '1 cup', price: 30 },
+      { id: uuidv4(), name: 'Onions', amount: '2 medium', price: 20 },
+      { id: uuidv4(), name: 'Tomatoes', amount: '2 medium', price: 20 },
+      { id: uuidv4(), name: 'Mint chutney', amount: '4 tbsp', price: 15 }
+    ],
+    instructions: [
+      'Mix puffed rice with sev and crushed puris',
+      'Add finely chopped onions and tomatoes',
+      'Add both mint and tamarind chutneys',
+      'Sprinkle chaat masala and mix well',
+      'Serve immediately while crispy'
+    ]
+  },
+  {
+    id: '8',
+    title: 'Kathi Roll',
+    description: 'Grilled flatbread wrapped with spiced fillings',
+    category: ['Snack', 'Non-Vegetarian', 'Street Food'],
+    prepTime: 20,
+    cookTime: 15,
+    servings: 4,
+    image: 'https://images.unsplash.com/photo-1567337710282-00832b415979?q=80&w=2030&auto=format&fit=crop',
+    isFavorite: false,
+    ingredients: [
+      { id: uuidv4(), name: 'Paratha', amount: '8 pieces', price: 40 },
+      { id: uuidv4(), name: 'Chicken', amount: '500g', price: 120 },
+      { id: uuidv4(), name: 'Eggs', amount: '4', price: 30 },
+      { id: uuidv4(), name: 'Bell peppers', amount: '2', price: 30 },
+      { id: uuidv4(), name: 'Spice mix', amount: '2 tbsp', price: 20 }
+    ],
+    instructions: [
+      'Marinate chicken with spices and grill',
+      'Cook parathas on griddle',
+      'Spread beaten egg on paratha',
+      'Add grilled chicken and vegetables',
+      'Roll tightly and serve hot'
+    ]
+  },
+  {
+    id: '9',
+    title: 'Dahi Puri',
+    description: 'Crispy puris topped with yogurt and chutneys',
+    category: ['Snack', 'Vegetarian', 'Street Food'],
+    prepTime: 15,
+    cookTime: 0,
+    servings: 4,
+    image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?q=80&w=2071&auto=format&fit=crop',
+    isFavorite: false,
+    ingredients: [
+      { id: uuidv4(), name: 'Puri shells', amount: '24 pieces', price: 40 },
+      { id: uuidv4(), name: 'Yogurt', amount: '2 cups', price: 40 },
+      { id: uuidv4(), name: 'Boiled potatoes', amount: '2', price: 20 },
+      { id: uuidv4(), name: 'Sweet chutney', amount: '4 tbsp', price: 15 },
+      { id: uuidv4(), name: 'Sev', amount: '1 cup', price: 25 }
+    ],
+    instructions: [
+      'Crack puris on top and fill with potato mixture',
+      'Top with whisked yogurt',
+      'Add sweet and spicy chutneys',
+      'Sprinkle sev and chaat masala',
+      'Serve immediately'
+    ]
+  },
+  {
+    id: '10',
+    title: 'Aloo Tikki',
+    description: 'Crispy potato patties with spices',
+    category: ['Snack', 'Vegetarian', 'Street Food'],
+    prepTime: 20,
+    cookTime: 15,
+    servings: 4,
+    image: 'https://images.unsplash.com/photo-1475305579353-e8c8241cec47?q=80&w=2070&auto=format&fit=crop',
+    isFavorite: false,
+    ingredients: [
+      { id: uuidv4(), name: 'Potatoes', amount: '4 large', price: 40 },
+      { id: uuidv4(), name: 'Green peas', amount: '1 cup', price: 30 },
+      { id: uuidv4(), name: 'Bread crumbs', amount: '1 cup', price: 20 },
+      { id: uuidv4(), name: 'Ginger paste', amount: '1 tbsp', price: 10 },
+      { id: uuidv4(), name: 'Oil', amount: '1/2 cup', price: 30 }
+    ],
+    instructions: [
+      'Boil and mash potatoes with cooked peas',
+      'Mix with spices and shape into patties',
+      'Coat with bread crumbs',
+      'Shallow fry until golden brown',
+      'Serve hot with chutneys'
+    ]
+  },
+  {
+    id: '11',
+    title: 'Dabeli',
+    description: 'Sweet and spicy potato filling in a bun',
+    category: ['Snack', 'Vegetarian', 'Street Food'],
+    prepTime: 20,
+    cookTime: 10,
+    servings: 4,
+    image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?q=80&w=2071&auto=format&fit=crop',
+    isFavorite: false,
+    ingredients: [
+      { id: uuidv4(), name: 'Pav buns', amount: '8', price: 30 },
+      { id: uuidv4(), name: 'Potatoes', amount: '4 medium', price: 40 },
+      { id: uuidv4(), name: 'Dabeli masala', amount: '2 tbsp', price: 20 },
+      { id: uuidv4(), name: 'Pomegranate', amount: '1/2 cup', price: 30 },
+      { id: uuidv4(), name: 'Peanuts', amount: '1/2 cup', price: 20 }
+    ],
+    instructions: [
+      'Prepare spicy-sweet potato mixture',
+      'Toast pav buns with butter',
+      'Fill with potato mixture',
+      'Top with peanuts and pomegranate',
+      'Serve hot with chutney'
+    ]
+  },
+  {
+    id: '12',
+    title: 'Corn Bhel',
+    description: 'Healthy snack with corn and vegetables',
+    category: ['Snack', 'Vegetarian', 'Healthy'],
+    prepTime: 15,
+    cookTime: 5,
+    servings: 4,
+    image: 'https://images.unsplash.com/photo-1543187018-a9493397bd5c?q=80&w=2069&auto=format&fit=crop',
+    isFavorite: false,
+    ingredients: [
+      { id: uuidv4(), name: 'Sweet corn', amount: '2 cups', price: 40 },
+      { id: uuidv4(), name: 'Onions', amount: '1 medium', price: 10 },
+      { id: uuidv4(), name: 'Tomatoes', amount: '1 medium', price: 10 },
+      { id: uuidv4(), name: 'Lemon juice', amount: '2 tbsp', price: 10 },
+      { id: uuidv4(), name: 'Chat masala', amount: '1 tsp', price: 5 }
+    ],
+    instructions: [
+      'Boil or grill corn kernels',
+      'Mix with chopped vegetables',
+      'Add lemon juice and spices',
+      'Toss everything together',
+      'Serve immediately'
+    ]
+  },
+  {
+    id: '13',
+    title: 'Moong Dal Chilla',
+    description: 'Healthy lentil crepes with spices',
+    category: ['Snack', 'Vegetarian', 'Healthy'],
+    prepTime: 20,
+    cookTime: 15,
+    servings: 4,
+    image: 'https://images.unsplash.com/photo-1505253668822-42074d58a7c6?q=80&w=2574&auto=format&fit=crop',
+    isFavorite: false,
+    ingredients: [
+      { id: uuidv4(), name: 'Moong dal', amount: '1 cup', price: 50 },
+      { id: uuidv4(), name: 'Onions', amount: '1 medium', price: 10 },
+      { id: uuidv4(), name: 'Green chilies', amount: '2', price: 5 },
+      { id: uuidv4(), name: 'Coriander', amount: '1/2 cup', price: 10 },
+      { id: uuidv4(), name: 'Oil', amount: '4 tbsp', price: 20 }
+    ],
+    instructions: [
+      'Soak and grind moong dal to smooth batter',
+      'Add chopped vegetables and spices',
+      'Heat tawa and spread batter in circle',
+      'Cook with oil until crispy',
+      'Serve hot with chutney'
+    ]
+  },
+  {
+    id: '14',
+    title: 'Bread Pakora',
+    description: 'Stuffed bread slices in spicy gram flour batter',
+    category: ['Snack', 'Vegetarian', 'Street Food'],
     prepTime: 15,
     cookTime: 15,
     servings: 4,
-    image: 'https://www.whiskaffair.com/wp-content/uploads/2020/03/Vegetable-Pakora-2-1.jpg',
+    image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?q=80&w=2025&auto=format&fit=crop',
     isFavorite: false,
     ingredients: [
-      { id: uuidv4(), name: 'Chickpea flour', amount: '1 cup', price: 40 },
-      { id: uuidv4(), name: 'Onions', amount: '2 medium', price: 20 },
-      { id: uuidv4(), name: 'Potatoes', amount: '1 medium', price: 10 },
-      { id: uuidv4(), name: 'Spinach leaves', amount: '1 cup', price: 30 },
-      { id: uuidv4(), name: 'Green chilies', amount: '2', price: 5 },
-      { id: uuidv4(), name: 'Oil for frying', amount: '2 cups', price: 60 }
+      { id: uuidv4(), name: 'Bread slices', amount: '8', price: 30 },
+      { id: uuidv4(), name: 'Potatoes', amount: '2 medium', price: 20 },
+      { id: uuidv4(), name: 'Gram flour', amount: '1 cup', price: 30 },
+      { id: uuidv4(), name: 'Green chutney', amount: '4 tbsp', price: 15 },
+      { id: uuidv4(), name: 'Oil', amount: '2 cups', price: 60 }
     ],
     instructions: [
-      'Mix chickpea flour with salt, red chili powder, and turmeric in a bowl.',
-      'Add water gradually to make a thick batter. Add cumin seeds and chopped green chilies.',
-      'Slice vegetables like onions, potatoes, and spinach.',
-      'Dip vegetable pieces in the batter and deep fry until golden brown.',
-      'Serve hot with mint chutney and tamarind sauce.'
+      'Prepare potato filling with spices',
+      'Make sandwich with green chutney',
+      'Prepare gram flour batter',
+      'Dip sandwiches in batter and deep fry',
+      'Serve hot with ketchup'
     ]
   }
 ];
+
